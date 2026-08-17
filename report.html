@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cloud Drift Sentinel - Security Posture & Drift Report</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --bg-primary: #0a0f1d;
+            --bg-card: #131b2e;
+            --bg-card-hover: #1c2742;
+            --border-color: rgba(255, 255, 255, 0.08);
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --accent-cyan: #06b6d4;
+            --accent-blue: #3b82f6;
+            --critical: #ef4444;
+            --high: #f97316;
+            --medium: #eab308;
+            --low: #38bdf8;
+            --success: #10b981;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-main);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.5;
+            padding: 2rem 1.5rem;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .brand-section {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .brand-logo {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            box-shadow: 0 4px 16px rgba(6, 182, 212, 0.3);
+        }
+
+        .brand-title h1 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        .brand-title p {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+        }
+
+        .meta-badges {
+            display: flex;
+            gap: 0.75rem;
+            align-items: center;
+        }
+
+        .badge {
+            padding: 0.4rem 0.8rem;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+        }
+
+        .badge.provider {
+            color: var(--accent-cyan);
+            border-color: rgba(6, 182, 212, 0.3);
+        }
+
+        /* KPI Cards */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.25rem;
+            margin-bottom: 2rem;
+        }
+
+        .kpi-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.25rem;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.2s, background-color 0.2s;
+        }
+
+        .kpi-card:hover {
+            transform: translateY(-2px);
+            background-color: var(--bg-card-hover);
+        }
+
+        .kpi-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .kpi-value {
+            font-size: 2rem;
+            font-weight: 700;
+            display: flex;
+            align-items: baseline;
+            gap: 0.25rem;
+        }
+
+        .kpi-subtext {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+        }
+
+        /* Charts Section */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .chart-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+        }
+
+        .chart-card h2 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--text-main);
+        }
+
+        .chart-wrapper {
+            position: relative;
+            height: 220px;
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Findings & Drift Tables */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.25rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .section-header h2 {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .search-filters {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .search-input {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 0.5rem 0.9rem;
+            color: var(--text-main);
+            font-size: 0.85rem;
+            font-family: inherit;
+            outline: none;
+            width: 240px;
+        }
+
+        .search-input:focus {
+            border-color: var(--accent-cyan);
+        }
+
+        .filter-select {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 0.5rem 0.9rem;
+            color: var(--text-main);
+            font-size: 0.85rem;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .table-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 2.5rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.875rem;
+        }
+
+        th {
+            background: rgba(255, 255, 255, 0.02);
+            color: var(--text-muted);
+            font-weight: 600;
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid var(--border-color);
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+        }
+
+        td {
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-main);
+            vertical-align: top;
+        }
+
+        tr:hover td {
+            background-color: var(--bg-card-hover);
+        }
+
+        .sev-tag {
+            display: inline-block;
+            padding: 0.25rem 0.6rem;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+        }
+
+        .sev-CRITICAL { background: rgba(239, 68, 68, 0.2); color: var(--critical); border: 1px solid var(--critical); }
+        .sev-HIGH { background: rgba(249, 115, 22, 0.2); color: var(--high); border: 1px solid var(--high); }
+        .sev-MEDIUM { background: rgba(234, 179, 8, 0.2); color: var(--medium); border: 1px solid var(--medium); }
+        .sev-LOW { background: rgba(56, 189, 248, 0.2); color: var(--low); border: 1px solid var(--low); }
+
+        .code-box {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 0.5rem 0.75rem;
+            border-radius: 6px;
+            margin-top: 0.5rem;
+            color: #cbd5e1;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            word-break: break-all;
+        }
+
+        .diff-added { color: #10b981; }
+        .diff-modified { color: #eab308; }
+        .diff-removed { color: #ef4444; }
+
+        footer {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            padding: 2rem 0;
+            border-top: 1px solid var(--border-color);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <div class="brand-section">
+                <div class="brand-logo">🛡️</div>
+                <div class="brand-title">
+                    <h1>Cloud Drift Sentinel</h1>
+                    <p>Automated Cloud Security Posture Management & Drift Analysis</p>
+                </div>
+            </div>
+            <div class="meta-badges">
+                <span class="badge provider">MOCK-AWS</span>
+                <span class="badge">2026-08-17 13:24:54 UTC</span>
+            </div>
+        </header>
+
+        <!-- KPI Grid -->
+        <div class="kpi-grid">
+            <div class="kpi-card">
+                <div class="kpi-label">COMPLIANCE SCORE</div>
+                <div class="kpi-value" style="color: #ef4444">
+                    0.0%
+                </div>
+                <div class="kpi-subtext">CIS AWS Foundations Benchmark</div>
+            </div>
+
+            <div class="kpi-card">
+                <div class="kpi-label">CRITICAL VULNERABILITIES</div>
+                <div class="kpi-value" style="color: var(--critical)">5</div>
+                <div class="kpi-subtext">Immediate action required</div>
+            </div>
+
+            <div class="kpi-card">
+                <div class="kpi-label">HIGH & MEDIUM RISKS</div>
+                <div class="kpi-value" style="color: var(--high)">11</div>
+                <div class="kpi-subtext">7 High, 4 Medium</div>
+            </div>
+
+            <div class="kpi-card">
+                <div class="kpi-label">DRIFT DETECTIONS</div>
+                <div class="kpi-value" style="color: var(--low)">15</div>
+                <div class="kpi-subtext">IaC golden state deviations</div>
+            </div>
+        </div>
+
+        <!-- Visual Analytics -->
+        <div class="charts-grid">
+            <div class="chart-card">
+                <h2>Findings by Severity</h2>
+                <div class="chart-wrapper">
+                    <canvas id="severityChart"></canvas>
+                </div>
+            </div>
+            <div class="chart-card">
+                <h2>Findings by Cloud Domain</h2>
+                <div class="chart-wrapper">
+                    <canvas id="domainChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Findings Table Section -->
+        <div class="section-header">
+            <h2>Security Posture Findings (18)</h2>
+            <div class="search-filters">
+                <input type="text" id="findingSearch" class="search-input" placeholder="Search findings or resources..." oninput="filterFindings()">
+                <select id="severityFilter" class="filter-select" onchange="filterFindings()">
+                    <option value="ALL">All Severities</option>
+                    <option value="CRITICAL">Critical</option>
+                    <option value="HIGH">High</option>
+                    <option value="MEDIUM">Medium</option>
+                    <option value="LOW">Low</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="table-card">
+            <table id="findingsTable">
+                <thead>
+                    <tr>
+                        <th style="width: 110px;">Severity</th>
+                        <th style="width: 100px;">Rule</th>
+                        <th style="width: 250px;">Resource</th>
+                        <th>Issue & Remediation Guidance</th>
+                        <th style="width: 140px;">Benchmark</th>
+                    </tr>
+                </thead>
+                <tbody id="findingsBody">
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Infrastructure Drift Section -->
+        <div class="section-header">
+            <h2>⚡ Infrastructure Drift Analysis (15)</h2>
+        </div>
+
+        <div class="table-card">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 110px;">Drift Type</th>
+                        <th style="width: 260px;">Resource ID</th>
+                        <th style="width: 180px;">Resource Type</th>
+                        <th>Configuration Drift Summary</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    <tr>
+                        <td><span class="badge diff-removed">REMOVED</span></td>
+                        <td><strong>corp-production-customer-data</strong><br><span style="font-size:0.75rem; color:var(--text-muted);">arn:aws:s3:::corp-production-customer-data</span></td>
+                        <td><span style="font-size:0.8rem; color:var(--accent-cyan);">aws:s3:bucket</span></td>
+                        <td><div class="code-box"><pre>{
+  "status": "Resource deleted or removed from cloud"
+}</pre></div></td>
+                    </tr>
+                
+                    <tr>
+                        <td><span class="badge diff-modified">MODIFIED</span></td>
+                        <td><strong>launch-wizard-legacy-web</strong><br><span style="font-size:0.75rem; color:var(--text-muted);">sg-01a2b3c4d5e6f7001</span></td>
+                        <td><span style="font-size:0.8rem; color:var(--accent-cyan);">aws:ec2:security-group</span></td>
+                        <td><div class="code-box"><pre>{
+  "IpPermissions": {
+    "baseline": [
+      {
+        "IpProtocol": "tcp",
+        "FromPort": 443,
+        "ToPort": 443,
+        "IpRanges": [
+          {
+            "CidrIp": "0.0.0.0/0"
+          }
+        ]
+      }
+    ],
+    "current": [
+      {
+        "IpProtocol": "tcp",
+        "FromPort": 22,
+        "ToPort": 22,
+        "IpRanges": [
+          {
+            "CidrIp": "0.0.0.0/0"
+          }
+        ]
+      },
+      {
+        "IpProtocol": "tcp",
+        "FromPort": 3389,
+        "ToPort": 3389,
+        "IpRanges": [
+          {
+            "CidrIp": "0.0.0.0/0"
+          }
+        ]
+      },
+      {
+        "IpProtocol": "tcp",
+        "FromPort": 80,
+        "ToPort": 80,
+        "IpRanges": [
+          {
+            "CidrIp": "0.0.0.0/0"
+          }
+        ]
+      }
+    ],
+    "type": "CHANGED"
+  },
+  "tags": {
+    "Tier": {
+      "baseline": "Web",
+      "current": null,
+      "type": "REMOVED_KEY"
+    },
+    "Environment": {
+      "baseline": "Production",
+      "current": "Development",
+      "type": "CHANGED"
+    }
+  }
+}</pre></div></td>
+                    </tr>
+                
+                    <tr>
+                        <td><span class="badge diff-modified">MODIFIED</span></td>
+                        <td><strong>devops_lead</strong><br><span style="font-size:0.75rem; color:var(--text-muted);">arn:aws:iam::112233445566:user/devops_lead</span></td>
+                        <td><span style="font-size:0.8rem; color:var(--accent-cyan);">aws:iam:user</span></td>
+                        <td><div class="code-box"><pre>{
+  "mfa_active": {
+    "baseline": true,
+    "current": false,
+    "type": "CHANGED"
+  },
+  "access_keys": {
+    "baseline": [
+      {
+        "access_key_id": "AKIAI44QH8DHBEXAMPLE",
+        "status": "Active",
+        "days_since_last_used": 10
+      }
+    ],
+    "current": [
+      {
+        "access_key_id": "AKIAI44QH8DHBEXAMPLE",
+        "status": "Active",
+        "days_since_last_used": 124
+      }
+    ],
+    "type": "CHANGED"
+  },
+  "tags": {
+    "Tier": {
+      "baseline": null,
+      "current": "1",
+      "type": "ADDED_KEY"
+    }
+  }
+}</pre></div></td>
+                    </tr>
+                
+                    <tr>
+                        <td><span class="badge diff-added">ADDED</span></td>
+                        <td><strong>AWS Root Account (Production)</strong><br><span style="font-size:0.75rem; color:var(--text-muted);">aws-account-112233445566-root</span></td>
+                        <td><span style="font-size:0.8rem; color:var(--accent-cyan);">aws:iam:account</span></td>
+                        <td><div class="code-box"><pre>{
+  "status": "Unmanaged / rogue resource created outside IaC baseline"
+}</pre></div></td>
+                    </tr>
+                
+                    <tr>
+                        <td><span class="badge diff-added">ADDED</span></td>
+                        <td><strong>sarah_security</strong><br><span style="font-size:0.75rem; color:var(--text-muted);">arn:aws:iam::112233445566:user/sarah_security</span></td>
+                        <td><span style="font-size:0.8rem; color:var(--accent-cyan);">aws:iam:user</span></td>
+                        <td><div class="code-box"><pre>{
+  "status": "Unmanaged / rogue resource created outside IaC baseline"
+}</pre></div></td>
+                    </tr>
+                
+                    <tr>
+                        <td><span class="badge diff-added">ADDED</span></td>
+                        <td><strong>ShadowAdminFullAccess</strong><br><span style="font-size:0.75rem; color:var(--text-muted);">arn:aws:iam::112233445566:policy/ShadowAdminFullAccess</span></td>
+                        <td><span style="font-size:0.8rem; color:var(--accent-cyan);">aws:iam:policy</span></td>
+                        <td><div class="code-box"><pre>{
+  "status": "Unmanaged / rogue resource created outside IaC baseline"
+}</pre></div></td>
+                    </tr>
+                
+                    <tr>
+                        <td><span class="badge diff-added">ADDED</span></td>
+                        <td><strong>PublicCrossAccountRole</strong><br><span style="font-size:0.75rem; color:var(--text-muted);">arn:aws:iam::112233445566:role/PublicCrossAccountRole</span></td>
+                        <td><span style="font-size:0.8rem; color:var(--accent-cyan);">aws:iam:role</span></td>
+                        <td><div class="code-box"><pre>{
+  "status": "Unmanaged / rogue resource created outside IaC baseline"
+}</pre></div></td>
+                    </tr>
+                
+                    <tr>
+                        <td><span class="badge diff-added">ADDED</span></td>
+                        <td><strong>corp-customer-analytics-prod-data</strong><br><span style="font-size:0.75rem; color:var(--text-muted);">arn:aws:s3:::corp-customer-analytics-prod-data</span></td>
+                        <td><span style="font-size:0.8rem; color:var(--accent-cyan);">aws:s3:bucket</span></td>
+                        <td><div class="code-box"><pre>{
+  "status": "Unmanaged / rogue resource created outside IaC baseline"
+}</pre></div></td>
+                    </tr>
+                
+                    <tr>
+                        <td><span class="badge diff-added">ADDED</span></td>
+                        <td><strong>corp-audit-vault-compliant</strong><br><span style="font-size:0.75rem; color:var(--text-muted);">arn:aws:s3:::corp-audit-vault-compliant</span></td>
+                        <td><span style="font-size:0.8rem; color:var(--accent-cyan);">aws:s3:bucket</span></td>
+                        <td><div class="code-box"><pre>{
+  "status": "Unmanaged / rogue resource created outside IaC baseline"
+}</pre></div></td>
+                    </tr>
+                
+                    <tr>
+                        <td><span class="badge diff-added">ADDED</span></td>
+                        <td><strong>db-postgres-cluster-sg</strong><br><span style="font-size:0.75rem; color:var(--text-muted);">sg-01a2b3c4d5e6f7002</span></td>
+                        <td><span style="font-size:0.8rem; color:var(--accent-cyan);">aws:ec2:security-group</span></td>
+                        <td><div class="code-box"><pre>{
+  "status": "Unmanaged / rogue resource created outside IaC baseline"
+}</pre></div></td>
+                    </tr>
+                
+                    <tr>
+                        <td><span class="badge diff-added">ADDED</span></td>
+                        <td><strong>internal-microservice-hardened-sg</strong><br><span style="font-size:0.75rem; color:var(--text-muted);">sg-01a2b3c4d5e6f7003</span></td>
+                        <td><span style="font-size:0.8rem; color:var(--accent-cyan);">aws:ec2:security-group</span></td>
+                        <td><div class="code-box"><pre>{
+  "status": "Unmanaged / rogue resource created outside IaC baseline"
+}</pre></div></td>
+                    </tr>
+                
+                    <tr>
+                        <td><span class="badge diff-added">ADDED</span></td>
+                        <td><strong>corp-legacy-mysql-primary</strong><br><span style="font-size:0.75rem; color:var(--text-muted);">arn:aws:rds:us-east-1:112233445566:db:corp-legacy-mysql-primary</span></td>
+                        <td><span style="font-size:0.8rem; color:var(--accent-cyan);">aws:rds:db-instance</span></td>
+                        <td><div class="code-box"><pre>{
+  "status": "Unmanaged / rogue resource created outside IaC baseline"
+}</pre></div></td>
+                    </tr>
+                
+                    <tr>
+                        <td><span class="badge diff-added">ADDED</span></td>
+                        <td><strong>management-trail</strong><br><span style="font-size:0.75rem; color:var(--text-muted);">arn:aws:cloudtrail:us-east-1:112233445566:trail/management-trail</span></td>
+                        <td><span style="font-size:0.8rem; color:var(--accent-cyan);">aws:cloudtrail:trail</span></td>
+                        <td><div class="code-box"><pre>{
+  "status": "Unmanaged / rogue resource created outside IaC baseline"
+}</pre></div></td>
+                    </tr>
+                
+                    <tr>
+                        <td><span class="badge diff-added">ADDED</span></td>
+                        <td><strong>alias/app-master-encryption-key</strong><br><span style="font-size:0.75rem; color:var(--text-muted);">arn:aws:kms:us-east-1:112233445566:key/c0987654-1234-abcd-ef01-234567890abc</span></td>
+                        <td><span style="font-size:0.8rem; color:var(--accent-cyan);">aws:kms:key</span></td>
+                        <td><div class="code-box"><pre>{
+  "status": "Unmanaged / rogue resource created outside IaC baseline"
+}</pre></div></td>
+                    </tr>
+                
+                    <tr>
+                        <td><span class="badge diff-added">ADDED</span></td>
+                        <td><strong>vpc-default</strong><br><span style="font-size:0.75rem; color:var(--text-muted);">vpc-default-0123456789</span></td>
+                        <td><span style="font-size:0.8rem; color:var(--accent-cyan);">aws:ec2:vpc</span></td>
+                        <td><div class="code-box"><pre>{
+  "status": "Unmanaged / rogue resource created outside IaC baseline"
+}</pre></div></td>
+                    </tr>
+                
+                </tbody>
+            </table>
+        </div>
+
+        <footer>
+            Cloud Drift Sentinel • Automated Cloud Security & Drift Auditing Platform • Generated with ❤️ by Aditya Singh
+        </footer>
+    </div>
+
+    <script>
+        const rawFindings = [{"rule_id": "CIS-1.4", "rule_name": "Ensure no root account access key exists", "severity": "CRITICAL", "resource_id": "aws-account-112233445566-root", "resource_type": "aws:iam:account", "description": "Root account should not possess active access keys as root possesses unrestricted administrative access.", "impact": "Compromise of root API keys allows an attacker complete control over the entire AWS cloud organization.", "remediation_guidance": "Delete all root user access keys immediately via AWS IAM console or CLI: `aws iam delete-access-key`.", "benchmark_reference": "CIS AWS Foundations v2.0 - 1.4", "region": "global", "provider": "aws", "metadata": {"root_keys": ["AKIAIOSFODNN7EXAMPLE"]}, "timestamp": "2026-08-17T13:24:54.812820+00:00"}, {"rule_id": "CIS-1.5", "rule_name": "Ensure MFA is enabled for all IAM users with console passwords", "severity": "HIGH", "resource_id": "arn:aws:iam::112233445566:user/devops_lead", "resource_type": "aws:iam:user", "description": "IAM user 'devops_lead' has console password access without MFA enabled.", "impact": "Without MFA, password compromise immediately leads to unauthorized cloud console takeover.", "remediation_guidance": "Enable hardware or virtual MFA device for user: `aws iam enable-mfa-device`.", "benchmark_reference": "CIS AWS Foundations v2.0 - 1.5", "region": "global", "provider": "aws", "metadata": {"username": "devops_lead"}, "timestamp": "2026-08-17T13:24:54.812820+00:00"}, {"rule_id": "CIS-1.16", "rule_name": "Ensure IAM policies do not allow unrestricted wildcard administrative privileges", "severity": "CRITICAL", "resource_id": "arn:aws:iam::112233445566:policy/ShadowAdminFullAccess", "resource_type": "aws:iam:policy", "description": "Policy 'ShadowAdminFullAccess' contains unrestricted wildcard statement with Action: '*' and Resource: '*'.", "impact": "Identities with this policy possess unrestricted superuser permissions and can modify all cloud infrastructure.", "remediation_guidance": "Scope down policy statements to specific actions and explicit ARNs instead of wildcards.", "benchmark_reference": "CIS AWS Foundations v2.0 - 1.16", "region": "global", "provider": "aws", "metadata": {"violating_statement": {"Effect": "Allow", "Action": "*", "Resource": "*"}}, "timestamp": "2026-08-17T13:24:54.812820+00:00"}, {"rule_id": "CIS-1.19", "rule_name": "Ensure IAM credentials unused for 90 days or greater are disabled", "severity": "MEDIUM", "resource_id": "arn:aws:iam::112233445566:user/devops_lead", "resource_type": "aws:iam:user", "description": "IAM User 'devops_lead' has active access key 'AKIAI44QH8DHBEXAMPLE' unused for 124 days.", "impact": "Dormant credentials can be exploited without regular visibility or active monitoring.", "remediation_guidance": "Deactivate or remove unused access keys: `aws iam update-access-key --status Inactive`.", "benchmark_reference": "CIS AWS Foundations v2.0 - 1.19", "region": "global", "provider": "aws", "metadata": {"access_key_id": "AKIAI44QH8DHBEXAMPLE", "days_unused": 124}, "timestamp": "2026-08-17T13:24:54.812820+00:00"}, {"rule_id": "CIS-1.22", "rule_name": "Ensure IAM trust policies do not allow wildcard principals", "severity": "HIGH", "resource_id": "arn:aws:iam::112233445566:role/PublicCrossAccountRole", "resource_type": "aws:iam:role", "description": "Role 'PublicCrossAccountRole' trust policy allows wildcard principal '*', exposing the role externally.", "impact": "Allows arbitrary external AWS accounts or unauthenticated attackers to assume this IAM role.", "remediation_guidance": "Restrict the 'Principal' block in the role trust relationship to specific trusted AWS account IDs or IAM ARNs.", "benchmark_reference": "CIS AWS Foundations v2.0 - 1.22", "region": "global", "provider": "aws", "metadata": {"trust_statement": {"Effect": "Allow", "Principal": {"AWS": "*"}, "Action": "sts:AssumeRole"}}, "timestamp": "2026-08-17T13:24:54.812820+00:00"}, {"rule_id": "CIS-2.1.1", "rule_name": "Ensure S3 Buckets have Public Access Block configuration enabled", "severity": "HIGH", "resource_id": "arn:aws:s3:::corp-customer-analytics-prod-data", "resource_type": "aws:s3:bucket", "description": "S3 Bucket 'corp-customer-analytics-prod-data' does not have all 4 S3 Public Access Block settings enabled.", "impact": "Without Public Access Block, accidental ACL changes or bucket policy mistakes can expose private company data publicly.", "remediation_guidance": "Enable all 4 S3 Public Access Block flags: BlockPublicAcls, IgnorePublicAcls, BlockPublicPolicy, RestrictPublicBuckets.", "benchmark_reference": "CIS AWS Foundations v2.0 - 2.1.1", "region": "us-east-1", "provider": "aws", "metadata": {"public_access_block_config": {"BlockPublicAcls": false, "IgnorePublicAcls": false, "BlockPublicPolicy": false, "RestrictPublicBuckets": false}}, "timestamp": "2026-08-17T13:24:54.812820+00:00"}, {"rule_id": "CIS-2.1.2", "rule_name": "Ensure S3 Bucket default encryption is enabled", "severity": "HIGH", "resource_id": "arn:aws:s3:::corp-customer-analytics-prod-data", "resource_type": "aws:s3:bucket", "description": "S3 Bucket 'corp-customer-analytics-prod-data' lacks default server-side encryption configuration.", "impact": "Unencrypted objects are vulnerable to unauthorized access if raw storage media is inspected or compliance audits fail.", "remediation_guidance": "Configure default server-side encryption on the bucket using AES256 or AWS KMS: `aws s3api put-bucket-encryption`.", "benchmark_reference": "CIS AWS Foundations v2.0 - 2.1.2", "region": "us-east-1", "provider": "aws", "metadata": {"encryption_config": {}}, "timestamp": "2026-08-17T13:24:54.812820+00:00"}, {"rule_id": "CIS-2.1.3", "rule_name": "Ensure S3 Bucket does not allow public Read or Write access", "severity": "CRITICAL", "resource_id": "arn:aws:s3:::corp-customer-analytics-prod-data", "resource_type": "aws:s3:bucket", "description": "S3 Bucket 'corp-customer-analytics-prod-data' has public ACL grant (READ) for http://acs.amazonaws.com/groups/global/AllUsers.", "impact": "Confidential data can be exfiltrated, downloaded, or overwritten by any unauthenticated Internet user.", "remediation_guidance": "Remove public grants from Bucket ACL and remove `Principal: '*'` statements with `Effect: 'Allow'`.", "benchmark_reference": "CIS AWS Foundations v2.0 - 2.1.3", "region": "us-east-1", "provider": "aws", "metadata": {"violating_grant": {"Grantee": {"URI": "http://acs.amazonaws.com/groups/global/AllUsers"}, "Permission": "READ"}}, "timestamp": "2026-08-17T13:24:54.812820+00:00"}, {"rule_id": "CIS-2.1.4", "rule_name": "Ensure S3 Bucket has Versioning enabled", "severity": "LOW", "resource_id": "arn:aws:s3:::corp-customer-analytics-prod-data", "resource_type": "aws:s3:bucket", "description": "S3 Bucket 'corp-customer-analytics-prod-data' does not have object versioning enabled (Status: Suspended).", "impact": "Accidental object overwrites or malicious deletions cannot be restored without version history.", "remediation_guidance": "Enable versioning on the S3 bucket: `aws s3api put-bucket-versioning --status Enabled`.", "benchmark_reference": "CIS AWS Foundations v2.0 - 2.1.4", "region": "us-east-1", "provider": "aws", "metadata": {"versioning_status": "Suspended"}, "timestamp": "2026-08-17T13:24:54.812820+00:00"}, {"rule_id": "CIS-2.3.1", "rule_name": "Ensure RDS Database instances have encryption at rest enabled", "severity": "HIGH", "resource_id": "arn:aws:rds:us-east-1:112233445566:db:corp-legacy-mysql-primary", "resource_type": "aws:rds:db-instance", "description": "RDS Instance 'corp-legacy-mysql-primary' (arn:aws:rds:us-east-1:112233445566:db:corp-legacy-mysql-primary) is not encrypted at rest.", "impact": "Unencrypted database volumes pose significant compliance risks and risk data compromise upon physical storage decommission.", "remediation_guidance": "Create an encrypted snapshot of the database and restore it to a new encrypted DB instance.", "benchmark_reference": "CIS AWS Foundations v2.0 - 2.3.1", "region": "us-east-1", "provider": "aws", "metadata": {"engine": "mysql"}, "timestamp": "2026-08-17T13:24:54.812820+00:00"}, {"rule_id": "CIS-4.1", "rule_name": "Ensure no Security Group allows ingress from 0.0.0.0/0 to port 22 (SSH)", "severity": "CRITICAL", "resource_id": "sg-01a2b3c4d5e6f7001", "resource_type": "aws:ec2:security-group", "description": "Security Group 'launch-wizard-legacy-web' (sg-01a2b3c4d5e6f7001) allows unrestricted SSH (port 22) ingress from 0.0.0.0/0.", "impact": "Exposes SSH services directly to internet-wide brute force attacks, credential spraying, and remote exploits.", "remediation_guidance": "Restrict port 22 access to specific corporate IP CIDRs or use AWS Systems Manager (SSM) Session Manager.", "benchmark_reference": "CIS AWS Foundations v2.0 - 4.1", "region": "us-east-1", "provider": "aws", "metadata": {"violating_rules": [{"IpProtocol": "tcp", "FromPort": 22, "ToPort": 22, "IpRanges": [{"CidrIp": "0.0.0.0/0"}]}]}, "timestamp": "2026-08-17T13:24:54.812820+00:00"}, {"rule_id": "CIS-4.2", "rule_name": "Ensure no Security Group allows ingress from 0.0.0.0/0 to port 3389 (RDP)", "severity": "CRITICAL", "resource_id": "sg-01a2b3c4d5e6f7001", "resource_type": "aws:ec2:security-group", "description": "Security Group 'launch-wizard-legacy-web' (sg-01a2b3c4d5e6f7001) allows unrestricted RDP (port 3389) ingress from 0.0.0.0/0.", "impact": "Directly exposes Windows instances to BlueKeep, ransomware vectors, and automated credential stuffing.", "remediation_guidance": "Remove 0.0.0.0/0 ingress for port 3389 and mandate VPN / Bastion host access.", "benchmark_reference": "CIS AWS Foundations v2.0 - 4.2", "region": "us-east-1", "provider": "aws", "metadata": {"violating_rules": [{"IpProtocol": "tcp", "FromPort": 3389, "ToPort": 3389, "IpRanges": [{"CidrIp": "0.0.0.0/0"}]}]}, "timestamp": "2026-08-17T13:24:54.812820+00:00"}, {"rule_id": "CIS-4.3", "rule_name": "Ensure no Security Group allows public ingress to Database ports", "severity": "HIGH", "resource_id": "sg-01a2b3c4d5e6f7002", "resource_type": "aws:ec2:security-group", "description": "Security Group 'db-postgres-cluster-sg' (sg-01a2b3c4d5e6f7002) allows public 0.0.0.0/0 ingress to sensitive database ports.", "impact": "Exposes database listeners to external unauthorized connection attempts and potential data leaks.", "remediation_guidance": "Restrict database ports to application subnet CIDRs or application security group IDs.", "benchmark_reference": "CIS AWS Foundations v2.0 - 4.3", "region": "us-east-1", "provider": "aws", "metadata": {"violating_rules": [{"IpProtocol": "tcp", "FromPort": 5432, "ToPort": 5432, "IpRanges": [{"CidrIp": "0.0.0.0/0"}]}]}, "timestamp": "2026-08-17T13:24:54.812820+00:00"}, {"rule_id": "CIS-4.4", "rule_name": "Ensure Default VPC is not actively deployed for production workloads", "severity": "LOW", "resource_id": "vpc-default-0123456789", "resource_type": "aws:ec2:vpc", "description": "Default VPC 'vpc-default-0123456789' is actively hosting running production compute instances.", "impact": "Deploying workloads in the default VPC increases accidental public exposure risks.", "remediation_guidance": "Create custom multi-tier VPCs with dedicated private and public subnets, NAT gateways, and flow logs.", "benchmark_reference": "CIS AWS Foundations v2.0 - 4.4", "region": "us-east-1", "provider": "aws", "metadata": {"active_instances": 4}, "timestamp": "2026-08-17T13:24:54.812820+00:00"}, {"rule_id": "CIS-3.1", "rule_name": "Ensure CloudTrail is enabled across all regions", "severity": "HIGH", "resource_id": "arn:aws:cloudtrail:us-east-1:112233445566:trail/management-trail", "resource_type": "aws:cloudtrail:trail", "description": "CloudTrail 'management-trail' is not configured as a multi-region trail or logging is paused.", "impact": "Attackers frequently launch malicious compute or miners in obscure, unmonitored AWS regions.", "remediation_guidance": "Update CloudTrail trail to be multi-region: `aws cloudtrail update-trail --name <trail> --is-multi-region-trail`.", "benchmark_reference": "CIS AWS Foundations v2.0 - 3.1", "region": "us-east-1", "provider": "aws", "metadata": {"is_multi_region": false, "is_logging": true}, "timestamp": "2026-08-17T13:24:54.812820+00:00"}, {"rule_id": "CIS-3.2", "rule_name": "Ensure CloudTrail log file validation is enabled", "severity": "MEDIUM", "resource_id": "arn:aws:cloudtrail:us-east-1:112233445566:trail/management-trail", "resource_type": "aws:cloudtrail:trail", "description": "CloudTrail 'management-trail' does not have log file integrity validation enabled.", "impact": "Without log validation, tampered or altered forensic trails cannot be cryptographically proven in breach investigations.", "remediation_guidance": "Enable log file validation: `aws cloudtrail update-trail --name <trail> --enable-log-file-validation`.", "benchmark_reference": "CIS AWS Foundations v2.0 - 3.2", "region": "us-east-1", "provider": "aws", "metadata": {"validation_enabled": false}, "timestamp": "2026-08-17T13:24:54.812820+00:00"}, {"rule_id": "CIS-3.7", "rule_name": "Ensure AWS KMS Customer Managed Keys have automatic annual rotation enabled", "severity": "MEDIUM", "resource_id": "arn:aws:kms:us-east-1:112233445566:key/c0987654-1234-abcd-ef01-234567890abc", "resource_type": "aws:kms:key", "description": "KMS Key 'arn:aws:kms:us-east-1:112233445566:key/c0987654-1234-abcd-ef01-234567890abc' (Alias: alias/app-master-encryption-key) does not have automatic annual rotation enabled.", "impact": "Prevents long-term exposure of a single cryptographic key backing critical customer data.", "remediation_guidance": "Enable key rotation on the KMS key: `aws kms enable-key-rotation --key-id <key-id>`.", "benchmark_reference": "CIS AWS Foundations v2.0 - 3.7", "region": "us-east-1", "provider": "aws", "metadata": {"key_id": "arn:aws:kms:us-east-1:112233445566:key/c0987654-1234-abcd-ef01-234567890abc", "key_rotation": false}, "timestamp": "2026-08-17T13:24:54.812820+00:00"}, {"rule_id": "CIS-3.9", "rule_name": "Ensure VPC Flow Logging is enabled for all VPCs", "severity": "MEDIUM", "resource_id": "vpc-default-0123456789", "resource_type": "aws:ec2:vpc", "description": "VPC 'vpc-default-0123456789' (vpc-default) lacks active VPC Flow Logging.", "impact": "Without flow logs, network anomaly detection, data exfiltration tracking, and threat investigations are severely impaired.", "remediation_guidance": "Enable VPC Flow Logs to CloudWatch Logs or S3: `aws ec2 create-flow-logs`.", "benchmark_reference": "CIS AWS Foundations v2.0 - 3.9", "region": "us-east-1", "provider": "aws", "metadata": {"flow_logs": false}, "timestamp": "2026-08-17T13:24:54.812820+00:00"}];
+
+        function renderFindings(findings) {
+            const tbody = document.getElementById('findingsBody');
+            tbody.innerHTML = '';
+
+            if (findings.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 2rem; color: var(--text-muted);">No matching findings found.</td></tr>';
+                return;
+            }
+
+            findings.forEach(f => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><span class="sev-tag sev-${f.severity}">${f.severity}</span></td>
+                    <td><strong>${f.rule_id}</strong></td>
+                    <td>
+                        <div style="font-weight: 600; color: #fff;">${f.resource_id.split(':').pop()}</div>
+                        <div style="font-size: 0.75rem; color: var(--text-muted); word-break: break-all;">${f.resource_id}</div>
+                    </td>
+                    <td>
+                        <div style="font-weight: 500; margin-bottom: 0.25rem;">${f.description}</div>
+                        <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.35rem;"><strong>Impact:</strong> ${f.impact}</div>
+                        <div class="code-box"><strong>Fix:</strong> ${f.remediation_guidance}</div>
+                    </td>
+                    <td><span style="font-size: 0.75rem; color: var(--text-muted);">${f.benchmark_reference}</span></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function filterFindings() {
+            const searchVal = document.getElementById('findingSearch').value.toLowerCase();
+            const sevVal = document.getElementById('severityFilter').value;
+
+            const filtered = rawFindings.filter(f => {
+                const matchSearch = f.description.toLowerCase().includes(searchVal) ||
+                                    f.resource_id.toLowerCase().includes(searchVal) ||
+                                    f.rule_id.toLowerCase().includes(searchVal);
+                const matchSev = sevVal === 'ALL' || f.severity === sevVal;
+                return matchSearch && matchSev;
+            });
+
+            renderFindings(filtered);
+        }
+
+        // Initial render
+        renderFindings(rawFindings);
+
+        // Chart 1: Severity Breakdown
+        new Chart(document.getElementById('severityChart'), {
+            type: 'doughnut',
+            data: {
+                labels: ['Critical', 'High', 'Medium', 'Low'],
+                datasets: [{
+                    data: [5, 7, 4, 2],
+                    backgroundColor: ['#ef4444', '#f97316', '#eab308', '#38bdf8'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom', labels: { color: '#94a3b8', font: { family: 'Inter' } } }
+                }
+            }
+        });
+
+        // Chart 2: Domain Breakdown
+        new Chart(document.getElementById('domainChart'), {
+            type: 'bar',
+            data: {
+                labels: ['IAM', 'Storage/RDS', 'Network/SG', 'Governance'],
+                datasets: [{
+                    label: 'Findings',
+                    data: [5, 5, 5, 3],
+                    backgroundColor: '#06b6d4',
+                    borderRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: { ticks: { color: '#94a3b8' }, grid: { display: false } },
+                    y: { ticks: { color: '#94a3b8', stepSize: 1 }, grid: { color: 'rgba(255,255,255,0.05)' } }
+                },
+                plugins: {
+                    legend: { display: false }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

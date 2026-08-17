@@ -1,0 +1,87 @@
+{
+  "version": "1.0",
+  "provider": "aws",
+  "resource_count": 5,
+  "resources": [
+    {
+      "id": "arn:aws:s3:::corp-production-customer-data",
+      "name": "corp-production-customer-data",
+      "resource_type": "aws:s3:bucket",
+      "provider": "aws",
+      "region": "us-east-1",
+      "tags": {
+        "Environment": "Production",
+        "ManagedBy": "Terraform"
+      },
+      "raw_config": {
+        "public_access_block": {
+          "BlockPublicAcls": true,
+          "IgnorePublicAcls": true,
+          "BlockPublicPolicy": true,
+          "RestrictPublicBuckets": true
+        },
+        "encryption": {
+          "ServerSideEncryptionConfiguration": {
+            "Rules": [
+              {
+                "ApplyServerSideEncryptionByDefault": {
+                  "SSEAlgorithm": "aws:kms"
+                }
+              }
+            ]
+          }
+        },
+        "versioning": {
+          "Status": "Enabled"
+        }
+      }
+    },
+    {
+      "id": "sg-01a2b3c4d5e6f7001",
+      "name": "launch-wizard-legacy-web",
+      "resource_type": "aws:ec2:security-group",
+      "provider": "aws",
+      "region": "us-east-1",
+      "tags": {
+        "Environment": "Production",
+        "Tier": "Web"
+      },
+      "raw_config": {
+        "VpcId": "vpc-0987654321fedcba0",
+        "IpPermissions": [
+          {
+            "IpProtocol": "tcp",
+            "FromPort": 443,
+            "ToPort": 443,
+            "IpRanges": [
+              {
+                "CidrIp": "0.0.0.0/0"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "arn:aws:iam::112233445566:user/devops_lead",
+      "name": "devops_lead",
+      "resource_type": "aws:iam:user",
+      "provider": "aws",
+      "region": "global",
+      "tags": {
+        "Team": "DevOps"
+      },
+      "raw_config": {
+        "password_enabled": true,
+        "mfa_active": true,
+        "access_keys": [
+          {
+            "access_key_id": "AKIAI44QH8DHBEXAMPLE",
+            "status": "Active",
+            "days_since_last_used": 10
+          }
+        ]
+      }
+    }
+  ]
+}

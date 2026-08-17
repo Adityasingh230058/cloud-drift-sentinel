@@ -1,0 +1,40 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.10", "3.11", "3.12"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .
+          pip install pytest pytest-cov
+
+      - name: Run Test Suite
+        env:
+          PYTHONPATH: src
+        run: |
+          pytest --cov=cloud_drift_sentinel --cov-report=term-missing tests/
+
+      - name: Validate CLI & Mock Scan
+        run: |
+          python -m cloud_drift_sentinel.cli rules
+          python -m cloud_drift_sentinel.cli scan --mock --html test_report.html --json test_report.json
+          python -m cloud_drift_sentinel.cli drift --baseline samples/baseline_config.json --mock

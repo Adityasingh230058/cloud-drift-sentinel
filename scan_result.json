@@ -1,0 +1,1205 @@
+{
+  "provider": "mock-aws",
+  "scan_time": "2026-08-17T13:24:54.812820+00:00",
+  "resources": [
+    {
+      "id": "aws-account-112233445566-root",
+      "name": "AWS Root Account (Production)",
+      "resource_type": "aws:iam:account",
+      "provider": "aws",
+      "region": "global",
+      "tags": {
+        "Environment": "Production",
+        "Owner": "SecOps"
+      },
+      "raw_config": {
+        "root_account_has_active_key": true,
+        "root_access_keys": [
+          "AKIAIOSFODNN7EXAMPLE"
+        ],
+        "account_mfa_present": true
+      }
+    },
+    {
+      "id": "arn:aws:iam::112233445566:user/devops_lead",
+      "name": "devops_lead",
+      "resource_type": "aws:iam:user",
+      "provider": "aws",
+      "region": "global",
+      "tags": {
+        "Team": "DevOps",
+        "Tier": "1"
+      },
+      "raw_config": {
+        "password_enabled": true,
+        "mfa_active": false,
+        "access_keys": [
+          {
+            "access_key_id": "AKIAI44QH8DHBEXAMPLE",
+            "status": "Active",
+            "days_since_last_used": 124
+          }
+        ]
+      }
+    },
+    {
+      "id": "arn:aws:iam::112233445566:user/sarah_security",
+      "name": "sarah_security",
+      "resource_type": "aws:iam:user",
+      "provider": "aws",
+      "region": "global",
+      "tags": {
+        "Team": "SecOps"
+      },
+      "raw_config": {
+        "password_enabled": true,
+        "mfa_active": true,
+        "access_keys": [
+          {
+            "access_key_id": "AKIAJ66FF8DHBEXAMPLE",
+            "status": "Active",
+            "days_since_last_used": 5
+          }
+        ]
+      }
+    },
+    {
+      "id": "arn:aws:iam::112233445566:policy/ShadowAdminFullAccess",
+      "name": "ShadowAdminFullAccess",
+      "resource_type": "aws:iam:policy",
+      "provider": "aws",
+      "region": "global",
+      "tags": {
+        "CreatedBy": "LegacyCI"
+      },
+      "raw_config": {
+        "policy_document": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Action": "*",
+              "Resource": "*"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "arn:aws:iam::112233445566:role/PublicCrossAccountRole",
+      "name": "PublicCrossAccountRole",
+      "resource_type": "aws:iam:role",
+      "provider": "aws",
+      "region": "global",
+      "tags": {
+        "Purpose": "CrossAccount"
+      },
+      "raw_config": {
+        "assume_role_policy": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": "*"
+              },
+              "Action": "sts:AssumeRole"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "arn:aws:s3:::corp-customer-analytics-prod-data",
+      "name": "corp-customer-analytics-prod-data",
+      "resource_type": "aws:s3:bucket",
+      "provider": "aws",
+      "region": "us-east-1",
+      "tags": {
+        "DataClassification": "Confidential",
+        "Department": "Analytics"
+      },
+      "raw_config": {
+        "public_access_block": {
+          "BlockPublicAcls": false,
+          "IgnorePublicAcls": false,
+          "BlockPublicPolicy": false,
+          "RestrictPublicBuckets": false
+        },
+        "encryption": {},
+        "versioning": {
+          "Status": "Suspended"
+        },
+        "acl": {
+          "Grants": [
+            {
+              "Grantee": {
+                "URI": "http://acs.amazonaws.com/groups/global/AllUsers"
+              },
+              "Permission": "READ"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "arn:aws:s3:::corp-audit-vault-compliant",
+      "name": "corp-audit-vault-compliant",
+      "resource_type": "aws:s3:bucket",
+      "provider": "aws",
+      "region": "us-east-1",
+      "tags": {
+        "Environment": "Production",
+        "Compliance": "CIS"
+      },
+      "raw_config": {
+        "public_access_block": {
+          "BlockPublicAcls": true,
+          "IgnorePublicAcls": true,
+          "BlockPublicPolicy": true,
+          "RestrictPublicBuckets": true
+        },
+        "encryption": {
+          "ServerSideEncryptionConfiguration": {
+            "Rules": [
+              {
+                "ApplyServerSideEncryptionByDefault": {
+                  "SSEAlgorithm": "aws:kms"
+                }
+              }
+            ]
+          }
+        },
+        "versioning": {
+          "Status": "Enabled"
+        },
+        "acl": {
+          "Grants": []
+        }
+      }
+    },
+    {
+      "id": "sg-01a2b3c4d5e6f7001",
+      "name": "launch-wizard-legacy-web",
+      "resource_type": "aws:ec2:security-group",
+      "provider": "aws",
+      "region": "us-east-1",
+      "tags": {
+        "Environment": "Development"
+      },
+      "raw_config": {
+        "VpcId": "vpc-0987654321fedcba0",
+        "IpPermissions": [
+          {
+            "IpProtocol": "tcp",
+            "FromPort": 22,
+            "ToPort": 22,
+            "IpRanges": [
+              {
+                "CidrIp": "0.0.0.0/0"
+              }
+            ]
+          },
+          {
+            "IpProtocol": "tcp",
+            "FromPort": 3389,
+            "ToPort": 3389,
+            "IpRanges": [
+              {
+                "CidrIp": "0.0.0.0/0"
+              }
+            ]
+          },
+          {
+            "IpProtocol": "tcp",
+            "FromPort": 80,
+            "ToPort": 80,
+            "IpRanges": [
+              {
+                "CidrIp": "0.0.0.0/0"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "sg-01a2b3c4d5e6f7002",
+      "name": "db-postgres-cluster-sg",
+      "resource_type": "aws:ec2:security-group",
+      "provider": "aws",
+      "region": "us-east-1",
+      "tags": {
+        "Tier": "Database"
+      },
+      "raw_config": {
+        "VpcId": "vpc-0987654321fedcba0",
+        "IpPermissions": [
+          {
+            "IpProtocol": "tcp",
+            "FromPort": 5432,
+            "ToPort": 5432,
+            "IpRanges": [
+              {
+                "CidrIp": "0.0.0.0/0"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "sg-01a2b3c4d5e6f7003",
+      "name": "internal-microservice-hardened-sg",
+      "resource_type": "aws:ec2:security-group",
+      "provider": "aws",
+      "region": "us-east-1",
+      "tags": {
+        "Tier": "Backend",
+        "Hardened": "True"
+      },
+      "raw_config": {
+        "VpcId": "vpc-0987654321fedcba0",
+        "IpPermissions": [
+          {
+            "IpProtocol": "tcp",
+            "FromPort": 8080,
+            "ToPort": 8080,
+            "IpRanges": [
+              {
+                "CidrIp": "10.0.0.0/16"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "arn:aws:rds:us-east-1:112233445566:db:corp-legacy-mysql-primary",
+      "name": "corp-legacy-mysql-primary",
+      "resource_type": "aws:rds:db-instance",
+      "provider": "aws",
+      "region": "us-east-1",
+      "tags": {
+        "Engine": "MySQL",
+        "Environment": "Production"
+      },
+      "raw_config": {
+        "engine": "mysql",
+        "storage_encrypted": false,
+        "publicly_accessible": false
+      }
+    },
+    {
+      "id": "arn:aws:cloudtrail:us-east-1:112233445566:trail/management-trail",
+      "name": "management-trail",
+      "resource_type": "aws:cloudtrail:trail",
+      "provider": "aws",
+      "region": "us-east-1",
+      "tags": {
+        "Compliance": "Legacy"
+      },
+      "raw_config": {
+        "IsMultiRegionTrail": false,
+        "LogFileValidationEnabled": false,
+        "IsLogging": true
+      }
+    },
+    {
+      "id": "arn:aws:kms:us-east-1:112233445566:key/c0987654-1234-abcd-ef01-234567890abc",
+      "name": "alias/app-master-encryption-key",
+      "resource_type": "aws:kms:key",
+      "provider": "aws",
+      "region": "us-east-1",
+      "tags": {
+        "ManagedBy": "Terraform"
+      },
+      "raw_config": {
+        "KeyManager": "CUSTOMER",
+        "KeyRotationEnabled": false,
+        "Enabled": true
+      }
+    },
+    {
+      "id": "vpc-default-0123456789",
+      "name": "vpc-default",
+      "resource_type": "aws:ec2:vpc",
+      "provider": "aws",
+      "region": "us-east-1",
+      "tags": {
+        "Name": "Default VPC"
+      },
+      "raw_config": {
+        "is_default": true,
+        "cidr_block": "172.31.0.0/16",
+        "flow_logs_enabled": false,
+        "active_instances_count": 4
+      }
+    }
+  ],
+  "findings": [
+    {
+      "rule_id": "CIS-1.4",
+      "rule_name": "Ensure no root account access key exists",
+      "severity": "CRITICAL",
+      "resource_id": "aws-account-112233445566-root",
+      "resource_type": "aws:iam:account",
+      "description": "Root account should not possess active access keys as root possesses unrestricted administrative access.",
+      "impact": "Compromise of root API keys allows an attacker complete control over the entire AWS cloud organization.",
+      "remediation_guidance": "Delete all root user access keys immediately via AWS IAM console or CLI: `aws iam delete-access-key`.",
+      "benchmark_reference": "CIS AWS Foundations v2.0 - 1.4",
+      "region": "global",
+      "provider": "aws",
+      "metadata": {
+        "root_keys": [
+          "AKIAIOSFODNN7EXAMPLE"
+        ]
+      },
+      "timestamp": "2026-08-17T13:24:54.812820+00:00"
+    },
+    {
+      "rule_id": "CIS-1.5",
+      "rule_name": "Ensure MFA is enabled for all IAM users with console passwords",
+      "severity": "HIGH",
+      "resource_id": "arn:aws:iam::112233445566:user/devops_lead",
+      "resource_type": "aws:iam:user",
+      "description": "IAM user 'devops_lead' has console password access without MFA enabled.",
+      "impact": "Without MFA, password compromise immediately leads to unauthorized cloud console takeover.",
+      "remediation_guidance": "Enable hardware or virtual MFA device for user: `aws iam enable-mfa-device`.",
+      "benchmark_reference": "CIS AWS Foundations v2.0 - 1.5",
+      "region": "global",
+      "provider": "aws",
+      "metadata": {
+        "username": "devops_lead"
+      },
+      "timestamp": "2026-08-17T13:24:54.812820+00:00"
+    },
+    {
+      "rule_id": "CIS-1.16",
+      "rule_name": "Ensure IAM policies do not allow unrestricted wildcard administrative privileges",
+      "severity": "CRITICAL",
+      "resource_id": "arn:aws:iam::112233445566:policy/ShadowAdminFullAccess",
+      "resource_type": "aws:iam:policy",
+      "description": "Policy 'ShadowAdminFullAccess' contains unrestricted wildcard statement with Action: '*' and Resource: '*'.",
+      "impact": "Identities with this policy possess unrestricted superuser permissions and can modify all cloud infrastructure.",
+      "remediation_guidance": "Scope down policy statements to specific actions and explicit ARNs instead of wildcards.",
+      "benchmark_reference": "CIS AWS Foundations v2.0 - 1.16",
+      "region": "global",
+      "provider": "aws",
+      "metadata": {
+        "violating_statement": {
+          "Effect": "Allow",
+          "Action": "*",
+          "Resource": "*"
+        }
+      },
+      "timestamp": "2026-08-17T13:24:54.812820+00:00"
+    },
+    {
+      "rule_id": "CIS-1.19",
+      "rule_name": "Ensure IAM credentials unused for 90 days or greater are disabled",
+      "severity": "MEDIUM",
+      "resource_id": "arn:aws:iam::112233445566:user/devops_lead",
+      "resource_type": "aws:iam:user",
+      "description": "IAM User 'devops_lead' has active access key 'AKIAI44QH8DHBEXAMPLE' unused for 124 days.",
+      "impact": "Dormant credentials can be exploited without regular visibility or active monitoring.",
+      "remediation_guidance": "Deactivate or remove unused access keys: `aws iam update-access-key --status Inactive`.",
+      "benchmark_reference": "CIS AWS Foundations v2.0 - 1.19",
+      "region": "global",
+      "provider": "aws",
+      "metadata": {
+        "access_key_id": "AKIAI44QH8DHBEXAMPLE",
+        "days_unused": 124
+      },
+      "timestamp": "2026-08-17T13:24:54.812820+00:00"
+    },
+    {
+      "rule_id": "CIS-1.22",
+      "rule_name": "Ensure IAM trust policies do not allow wildcard principals",
+      "severity": "HIGH",
+      "resource_id": "arn:aws:iam::112233445566:role/PublicCrossAccountRole",
+      "resource_type": "aws:iam:role",
+      "description": "Role 'PublicCrossAccountRole' trust policy allows wildcard principal '*', exposing the role externally.",
+      "impact": "Allows arbitrary external AWS accounts or unauthenticated attackers to assume this IAM role.",
+      "remediation_guidance": "Restrict the 'Principal' block in the role trust relationship to specific trusted AWS account IDs or IAM ARNs.",
+      "benchmark_reference": "CIS AWS Foundations v2.0 - 1.22",
+      "region": "global",
+      "provider": "aws",
+      "metadata": {
+        "trust_statement": {
+          "Effect": "Allow",
+          "Principal": {
+            "AWS": "*"
+          },
+          "Action": "sts:AssumeRole"
+        }
+      },
+      "timestamp": "2026-08-17T13:24:54.812820+00:00"
+    },
+    {
+      "rule_id": "CIS-2.1.1",
+      "rule_name": "Ensure S3 Buckets have Public Access Block configuration enabled",
+      "severity": "HIGH",
+      "resource_id": "arn:aws:s3:::corp-customer-analytics-prod-data",
+      "resource_type": "aws:s3:bucket",
+      "description": "S3 Bucket 'corp-customer-analytics-prod-data' does not have all 4 S3 Public Access Block settings enabled.",
+      "impact": "Without Public Access Block, accidental ACL changes or bucket policy mistakes can expose private company data publicly.",
+      "remediation_guidance": "Enable all 4 S3 Public Access Block flags: BlockPublicAcls, IgnorePublicAcls, BlockPublicPolicy, RestrictPublicBuckets.",
+      "benchmark_reference": "CIS AWS Foundations v2.0 - 2.1.1",
+      "region": "us-east-1",
+      "provider": "aws",
+      "metadata": {
+        "public_access_block_config": {
+          "BlockPublicAcls": false,
+          "IgnorePublicAcls": false,
+          "BlockPublicPolicy": false,
+          "RestrictPublicBuckets": false
+        }
+      },
+      "timestamp": "2026-08-17T13:24:54.812820+00:00"
+    },
+    {
+      "rule_id": "CIS-2.1.2",
+      "rule_name": "Ensure S3 Bucket default encryption is enabled",
+      "severity": "HIGH",
+      "resource_id": "arn:aws:s3:::corp-customer-analytics-prod-data",
+      "resource_type": "aws:s3:bucket",
+      "description": "S3 Bucket 'corp-customer-analytics-prod-data' lacks default server-side encryption configuration.",
+      "impact": "Unencrypted objects are vulnerable to unauthorized access if raw storage media is inspected or compliance audits fail.",
+      "remediation_guidance": "Configure default server-side encryption on the bucket using AES256 or AWS KMS: `aws s3api put-bucket-encryption`.",
+      "benchmark_reference": "CIS AWS Foundations v2.0 - 2.1.2",
+      "region": "us-east-1",
+      "provider": "aws",
+      "metadata": {
+        "encryption_config": {}
+      },
+      "timestamp": "2026-08-17T13:24:54.812820+00:00"
+    },
+    {
+      "rule_id": "CIS-2.1.3",
+      "rule_name": "Ensure S3 Bucket does not allow public Read or Write access",
+      "severity": "CRITICAL",
+      "resource_id": "arn:aws:s3:::corp-customer-analytics-prod-data",
+      "resource_type": "aws:s3:bucket",
+      "description": "S3 Bucket 'corp-customer-analytics-prod-data' has public ACL grant (READ) for http://acs.amazonaws.com/groups/global/AllUsers.",
+      "impact": "Confidential data can be exfiltrated, downloaded, or overwritten by any unauthenticated Internet user.",
+      "remediation_guidance": "Remove public grants from Bucket ACL and remove `Principal: '*'` statements with `Effect: 'Allow'`.",
+      "benchmark_reference": "CIS AWS Foundations v2.0 - 2.1.3",
+      "region": "us-east-1",
+      "provider": "aws",
+      "metadata": {
+        "violating_grant": {
+          "Grantee": {
+            "URI": "http://acs.amazonaws.com/groups/global/AllUsers"
+          },
+          "Permission": "READ"
+        }
+      },
+      "timestamp": "2026-08-17T13:24:54.812820+00:00"
+    },
+    {
+      "rule_id": "CIS-2.1.4",
+      "rule_name": "Ensure S3 Bucket has Versioning enabled",
+      "severity": "LOW",
+      "resource_id": "arn:aws:s3:::corp-customer-analytics-prod-data",
+      "resource_type": "aws:s3:bucket",
+      "description": "S3 Bucket 'corp-customer-analytics-prod-data' does not have object versioning enabled (Status: Suspended).",
+      "impact": "Accidental object overwrites or malicious deletions cannot be restored without version history.",
+      "remediation_guidance": "Enable versioning on the S3 bucket: `aws s3api put-bucket-versioning --status Enabled`.",
+      "benchmark_reference": "CIS AWS Foundations v2.0 - 2.1.4",
+      "region": "us-east-1",
+      "provider": "aws",
+      "metadata": {
+        "versioning_status": "Suspended"
+      },
+      "timestamp": "2026-08-17T13:24:54.812820+00:00"
+    },
+    {
+      "rule_id": "CIS-2.3.1",
+      "rule_name": "Ensure RDS Database instances have encryption at rest enabled",
+      "severity": "HIGH",
+      "resource_id": "arn:aws:rds:us-east-1:112233445566:db:corp-legacy-mysql-primary",
+      "resource_type": "aws:rds:db-instance",
+      "description": "RDS Instance 'corp-legacy-mysql-primary' (arn:aws:rds:us-east-1:112233445566:db:corp-legacy-mysql-primary) is not encrypted at rest.",
+      "impact": "Unencrypted database volumes pose significant compliance risks and risk data compromise upon physical storage decommission.",
+      "remediation_guidance": "Create an encrypted snapshot of the database and restore it to a new encrypted DB instance.",
+      "benchmark_reference": "CIS AWS Foundations v2.0 - 2.3.1",
+      "region": "us-east-1",
+      "provider": "aws",
+      "metadata": {
+        "engine": "mysql"
+      },
+      "timestamp": "2026-08-17T13:24:54.812820+00:00"
+    },
+    {
+      "rule_id": "CIS-4.1",
+      "rule_name": "Ensure no Security Group allows ingress from 0.0.0.0/0 to port 22 (SSH)",
+      "severity": "CRITICAL",
+      "resource_id": "sg-01a2b3c4d5e6f7001",
+      "resource_type": "aws:ec2:security-group",
+      "description": "Security Group 'launch-wizard-legacy-web' (sg-01a2b3c4d5e6f7001) allows unrestricted SSH (port 22) ingress from 0.0.0.0/0.",
+      "impact": "Exposes SSH services directly to internet-wide brute force attacks, credential spraying, and remote exploits.",
+      "remediation_guidance": "Restrict port 22 access to specific corporate IP CIDRs or use AWS Systems Manager (SSM) Session Manager.",
+      "benchmark_reference": "CIS AWS Foundations v2.0 - 4.1",
+      "region": "us-east-1",
+      "provider": "aws",
+      "metadata": {
+        "violating_rules": [
+          {
+            "IpProtocol": "tcp",
+            "FromPort": 22,
+            "ToPort": 22,
+            "IpRanges": [
+              {
+                "CidrIp": "0.0.0.0/0"
+              }
+            ]
+          }
+        ]
+      },
+      "timestamp": "2026-08-17T13:24:54.812820+00:00"
+    },
+    {
+      "rule_id": "CIS-4.2",
+      "rule_name": "Ensure no Security Group allows ingress from 0.0.0.0/0 to port 3389 (RDP)",
+      "severity": "CRITICAL",
+      "resource_id": "sg-01a2b3c4d5e6f7001",
+      "resource_type": "aws:ec2:security-group",
+      "description": "Security Group 'launch-wizard-legacy-web' (sg-01a2b3c4d5e6f7001) allows unrestricted RDP (port 3389) ingress from 0.0.0.0/0.",
+      "impact": "Directly exposes Windows instances to BlueKeep, ransomware vectors, and automated credential stuffing.",
+      "remediation_guidance": "Remove 0.0.0.0/0 ingress for port 3389 and mandate VPN / Bastion host access.",
+      "benchmark_reference": "CIS AWS Foundations v2.0 - 4.2",
+      "region": "us-east-1",
+      "provider": "aws",
+      "metadata": {
+        "violating_rules": [
+          {
+            "IpProtocol": "tcp",
+            "FromPort": 3389,
+            "ToPort": 3389,
+            "IpRanges": [
+              {
+                "CidrIp": "0.0.0.0/0"
+              }
+            ]
+          }
+        ]
+      },
+      "timestamp": "2026-08-17T13:24:54.812820+00:00"
+    },
+    {
+      "rule_id": "CIS-4.3",
+      "rule_name": "Ensure no Security Group allows public ingress to Database ports",
+      "severity": "HIGH",
+      "resource_id": "sg-01a2b3c4d5e6f7002",
+      "resource_type": "aws:ec2:security-group",
+      "description": "Security Group 'db-postgres-cluster-sg' (sg-01a2b3c4d5e6f7002) allows public 0.0.0.0/0 ingress to sensitive database ports.",
+      "impact": "Exposes database listeners to external unauthorized connection attempts and potential data leaks.",
+      "remediation_guidance": "Restrict database ports to application subnet CIDRs or application security group IDs.",
+      "benchmark_reference": "CIS AWS Foundations v2.0 - 4.3",
+      "region": "us-east-1",
+      "provider": "aws",
+      "metadata": {
+        "violating_rules": [
+          {
+            "IpProtocol": "tcp",
+            "FromPort": 5432,
+            "ToPort": 5432,
+            "IpRanges": [
+              {
+                "CidrIp": "0.0.0.0/0"
+              }
+            ]
+          }
+        ]
+      },
+      "timestamp": "2026-08-17T13:24:54.812820+00:00"
+    },
+    {
+      "rule_id": "CIS-4.4",
+      "rule_name": "Ensure Default VPC is not actively deployed for production workloads",
+      "severity": "LOW",
+      "resource_id": "vpc-default-0123456789",
+      "resource_type": "aws:ec2:vpc",
+      "description": "Default VPC 'vpc-default-0123456789' is actively hosting running production compute instances.",
+      "impact": "Deploying workloads in the default VPC increases accidental public exposure risks.",
+      "remediation_guidance": "Create custom multi-tier VPCs with dedicated private and public subnets, NAT gateways, and flow logs.",
+      "benchmark_reference": "CIS AWS Foundations v2.0 - 4.4",
+      "region": "us-east-1",
+      "provider": "aws",
+      "metadata": {
+        "active_instances": 4
+      },
+      "timestamp": "2026-08-17T13:24:54.812820+00:00"
+    },
+    {
+      "rule_id": "CIS-3.1",
+      "rule_name": "Ensure CloudTrail is enabled across all regions",
+      "severity": "HIGH",
+      "resource_id": "arn:aws:cloudtrail:us-east-1:112233445566:trail/management-trail",
+      "resource_type": "aws:cloudtrail:trail",
+      "description": "CloudTrail 'management-trail' is not configured as a multi-region trail or logging is paused.",
+      "impact": "Attackers frequently launch malicious compute or miners in obscure, unmonitored AWS regions.",
+      "remediation_guidance": "Update CloudTrail trail to be multi-region: `aws cloudtrail update-trail --name <trail> --is-multi-region-trail`.",
+      "benchmark_reference": "CIS AWS Foundations v2.0 - 3.1",
+      "region": "us-east-1",
+      "provider": "aws",
+      "metadata": {
+        "is_multi_region": false,
+        "is_logging": true
+      },
+      "timestamp": "2026-08-17T13:24:54.812820+00:00"
+    },
+    {
+      "rule_id": "CIS-3.2",
+      "rule_name": "Ensure CloudTrail log file validation is enabled",
+      "severity": "MEDIUM",
+      "resource_id": "arn:aws:cloudtrail:us-east-1:112233445566:trail/management-trail",
+      "resource_type": "aws:cloudtrail:trail",
+      "description": "CloudTrail 'management-trail' does not have log file integrity validation enabled.",
+      "impact": "Without log validation, tampered or altered forensic trails cannot be cryptographically proven in breach investigations.",
+      "remediation_guidance": "Enable log file validation: `aws cloudtrail update-trail --name <trail> --enable-log-file-validation`.",
+      "benchmark_reference": "CIS AWS Foundations v2.0 - 3.2",
+      "region": "us-east-1",
+      "provider": "aws",
+      "metadata": {
+        "validation_enabled": false
+      },
+      "timestamp": "2026-08-17T13:24:54.812820+00:00"
+    },
+    {
+      "rule_id": "CIS-3.7",
+      "rule_name": "Ensure AWS KMS Customer Managed Keys have automatic annual rotation enabled",
+      "severity": "MEDIUM",
+      "resource_id": "arn:aws:kms:us-east-1:112233445566:key/c0987654-1234-abcd-ef01-234567890abc",
+      "resource_type": "aws:kms:key",
+      "description": "KMS Key 'arn:aws:kms:us-east-1:112233445566:key/c0987654-1234-abcd-ef01-234567890abc' (Alias: alias/app-master-encryption-key) does not have automatic annual rotation enabled.",
+      "impact": "Prevents long-term exposure of a single cryptographic key backing critical customer data.",
+      "remediation_guidance": "Enable key rotation on the KMS key: `aws kms enable-key-rotation --key-id <key-id>`.",
+      "benchmark_reference": "CIS AWS Foundations v2.0 - 3.7",
+      "region": "us-east-1",
+      "provider": "aws",
+      "metadata": {
+        "key_id": "arn:aws:kms:us-east-1:112233445566:key/c0987654-1234-abcd-ef01-234567890abc",
+        "key_rotation": false
+      },
+      "timestamp": "2026-08-17T13:24:54.812820+00:00"
+    },
+    {
+      "rule_id": "CIS-3.9",
+      "rule_name": "Ensure VPC Flow Logging is enabled for all VPCs",
+      "severity": "MEDIUM",
+      "resource_id": "vpc-default-0123456789",
+      "resource_type": "aws:ec2:vpc",
+      "description": "VPC 'vpc-default-0123456789' (vpc-default) lacks active VPC Flow Logging.",
+      "impact": "Without flow logs, network anomaly detection, data exfiltration tracking, and threat investigations are severely impaired.",
+      "remediation_guidance": "Enable VPC Flow Logs to CloudWatch Logs or S3: `aws ec2 create-flow-logs`.",
+      "benchmark_reference": "CIS AWS Foundations v2.0 - 3.9",
+      "region": "us-east-1",
+      "provider": "aws",
+      "metadata": {
+        "flow_logs": false
+      },
+      "timestamp": "2026-08-17T13:24:54.812820+00:00"
+    }
+  ],
+  "drift_records": [
+    {
+      "drift_type": "REMOVED",
+      "resource_id": "arn:aws:s3:::corp-production-customer-data",
+      "resource_type": "aws:s3:bucket",
+      "resource_name": "corp-production-customer-data",
+      "differences": {
+        "status": "Resource deleted or removed from cloud"
+      },
+      "baseline_value": {
+        "public_access_block": {
+          "BlockPublicAcls": true,
+          "IgnorePublicAcls": true,
+          "BlockPublicPolicy": true,
+          "RestrictPublicBuckets": true
+        },
+        "encryption": {
+          "ServerSideEncryptionConfiguration": {
+            "Rules": [
+              {
+                "ApplyServerSideEncryptionByDefault": {
+                  "SSEAlgorithm": "aws:kms"
+                }
+              }
+            ]
+          }
+        },
+        "versioning": {
+          "Status": "Enabled"
+        }
+      },
+      "current_value": null,
+      "timestamp": "2026-08-17T13:24:54.813815+00:00"
+    },
+    {
+      "drift_type": "MODIFIED",
+      "resource_id": "sg-01a2b3c4d5e6f7001",
+      "resource_type": "aws:ec2:security-group",
+      "resource_name": "launch-wizard-legacy-web",
+      "differences": {
+        "IpPermissions": {
+          "baseline": [
+            {
+              "IpProtocol": "tcp",
+              "FromPort": 443,
+              "ToPort": 443,
+              "IpRanges": [
+                {
+                  "CidrIp": "0.0.0.0/0"
+                }
+              ]
+            }
+          ],
+          "current": [
+            {
+              "IpProtocol": "tcp",
+              "FromPort": 22,
+              "ToPort": 22,
+              "IpRanges": [
+                {
+                  "CidrIp": "0.0.0.0/0"
+                }
+              ]
+            },
+            {
+              "IpProtocol": "tcp",
+              "FromPort": 3389,
+              "ToPort": 3389,
+              "IpRanges": [
+                {
+                  "CidrIp": "0.0.0.0/0"
+                }
+              ]
+            },
+            {
+              "IpProtocol": "tcp",
+              "FromPort": 80,
+              "ToPort": 80,
+              "IpRanges": [
+                {
+                  "CidrIp": "0.0.0.0/0"
+                }
+              ]
+            }
+          ],
+          "type": "CHANGED"
+        },
+        "tags": {
+          "Tier": {
+            "baseline": "Web",
+            "current": null,
+            "type": "REMOVED_KEY"
+          },
+          "Environment": {
+            "baseline": "Production",
+            "current": "Development",
+            "type": "CHANGED"
+          }
+        }
+      },
+      "baseline_value": {
+        "VpcId": "vpc-0987654321fedcba0",
+        "IpPermissions": [
+          {
+            "IpProtocol": "tcp",
+            "FromPort": 443,
+            "ToPort": 443,
+            "IpRanges": [
+              {
+                "CidrIp": "0.0.0.0/0"
+              }
+            ]
+          }
+        ]
+      },
+      "current_value": {
+        "VpcId": "vpc-0987654321fedcba0",
+        "IpPermissions": [
+          {
+            "IpProtocol": "tcp",
+            "FromPort": 22,
+            "ToPort": 22,
+            "IpRanges": [
+              {
+                "CidrIp": "0.0.0.0/0"
+              }
+            ]
+          },
+          {
+            "IpProtocol": "tcp",
+            "FromPort": 3389,
+            "ToPort": 3389,
+            "IpRanges": [
+              {
+                "CidrIp": "0.0.0.0/0"
+              }
+            ]
+          },
+          {
+            "IpProtocol": "tcp",
+            "FromPort": 80,
+            "ToPort": 80,
+            "IpRanges": [
+              {
+                "CidrIp": "0.0.0.0/0"
+              }
+            ]
+          }
+        ]
+      },
+      "timestamp": "2026-08-17T13:24:54.813815+00:00"
+    },
+    {
+      "drift_type": "MODIFIED",
+      "resource_id": "arn:aws:iam::112233445566:user/devops_lead",
+      "resource_type": "aws:iam:user",
+      "resource_name": "devops_lead",
+      "differences": {
+        "mfa_active": {
+          "baseline": true,
+          "current": false,
+          "type": "CHANGED"
+        },
+        "access_keys": {
+          "baseline": [
+            {
+              "access_key_id": "AKIAI44QH8DHBEXAMPLE",
+              "status": "Active",
+              "days_since_last_used": 10
+            }
+          ],
+          "current": [
+            {
+              "access_key_id": "AKIAI44QH8DHBEXAMPLE",
+              "status": "Active",
+              "days_since_last_used": 124
+            }
+          ],
+          "type": "CHANGED"
+        },
+        "tags": {
+          "Tier": {
+            "baseline": null,
+            "current": "1",
+            "type": "ADDED_KEY"
+          }
+        }
+      },
+      "baseline_value": {
+        "password_enabled": true,
+        "mfa_active": true,
+        "access_keys": [
+          {
+            "access_key_id": "AKIAI44QH8DHBEXAMPLE",
+            "status": "Active",
+            "days_since_last_used": 10
+          }
+        ]
+      },
+      "current_value": {
+        "password_enabled": true,
+        "mfa_active": false,
+        "access_keys": [
+          {
+            "access_key_id": "AKIAI44QH8DHBEXAMPLE",
+            "status": "Active",
+            "days_since_last_used": 124
+          }
+        ]
+      },
+      "timestamp": "2026-08-17T13:24:54.813815+00:00"
+    },
+    {
+      "drift_type": "ADDED",
+      "resource_id": "aws-account-112233445566-root",
+      "resource_type": "aws:iam:account",
+      "resource_name": "AWS Root Account (Production)",
+      "differences": {
+        "status": "Unmanaged / rogue resource created outside IaC baseline"
+      },
+      "baseline_value": null,
+      "current_value": {
+        "root_account_has_active_key": true,
+        "root_access_keys": [
+          "AKIAIOSFODNN7EXAMPLE"
+        ],
+        "account_mfa_present": true
+      },
+      "timestamp": "2026-08-17T13:24:54.813815+00:00"
+    },
+    {
+      "drift_type": "ADDED",
+      "resource_id": "arn:aws:iam::112233445566:user/sarah_security",
+      "resource_type": "aws:iam:user",
+      "resource_name": "sarah_security",
+      "differences": {
+        "status": "Unmanaged / rogue resource created outside IaC baseline"
+      },
+      "baseline_value": null,
+      "current_value": {
+        "password_enabled": true,
+        "mfa_active": true,
+        "access_keys": [
+          {
+            "access_key_id": "AKIAJ66FF8DHBEXAMPLE",
+            "status": "Active",
+            "days_since_last_used": 5
+          }
+        ]
+      },
+      "timestamp": "2026-08-17T13:24:54.813815+00:00"
+    },
+    {
+      "drift_type": "ADDED",
+      "resource_id": "arn:aws:iam::112233445566:policy/ShadowAdminFullAccess",
+      "resource_type": "aws:iam:policy",
+      "resource_name": "ShadowAdminFullAccess",
+      "differences": {
+        "status": "Unmanaged / rogue resource created outside IaC baseline"
+      },
+      "baseline_value": null,
+      "current_value": {
+        "policy_document": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Action": "*",
+              "Resource": "*"
+            }
+          ]
+        }
+      },
+      "timestamp": "2026-08-17T13:24:54.813815+00:00"
+    },
+    {
+      "drift_type": "ADDED",
+      "resource_id": "arn:aws:iam::112233445566:role/PublicCrossAccountRole",
+      "resource_type": "aws:iam:role",
+      "resource_name": "PublicCrossAccountRole",
+      "differences": {
+        "status": "Unmanaged / rogue resource created outside IaC baseline"
+      },
+      "baseline_value": null,
+      "current_value": {
+        "assume_role_policy": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": "*"
+              },
+              "Action": "sts:AssumeRole"
+            }
+          ]
+        }
+      },
+      "timestamp": "2026-08-17T13:24:54.813815+00:00"
+    },
+    {
+      "drift_type": "ADDED",
+      "resource_id": "arn:aws:s3:::corp-customer-analytics-prod-data",
+      "resource_type": "aws:s3:bucket",
+      "resource_name": "corp-customer-analytics-prod-data",
+      "differences": {
+        "status": "Unmanaged / rogue resource created outside IaC baseline"
+      },
+      "baseline_value": null,
+      "current_value": {
+        "public_access_block": {
+          "BlockPublicAcls": false,
+          "IgnorePublicAcls": false,
+          "BlockPublicPolicy": false,
+          "RestrictPublicBuckets": false
+        },
+        "encryption": {},
+        "versioning": {
+          "Status": "Suspended"
+        },
+        "acl": {
+          "Grants": [
+            {
+              "Grantee": {
+                "URI": "http://acs.amazonaws.com/groups/global/AllUsers"
+              },
+              "Permission": "READ"
+            }
+          ]
+        }
+      },
+      "timestamp": "2026-08-17T13:24:54.813815+00:00"
+    },
+    {
+      "drift_type": "ADDED",
+      "resource_id": "arn:aws:s3:::corp-audit-vault-compliant",
+      "resource_type": "aws:s3:bucket",
+      "resource_name": "corp-audit-vault-compliant",
+      "differences": {
+        "status": "Unmanaged / rogue resource created outside IaC baseline"
+      },
+      "baseline_value": null,
+      "current_value": {
+        "public_access_block": {
+          "BlockPublicAcls": true,
+          "IgnorePublicAcls": true,
+          "BlockPublicPolicy": true,
+          "RestrictPublicBuckets": true
+        },
+        "encryption": {
+          "ServerSideEncryptionConfiguration": {
+            "Rules": [
+              {
+                "ApplyServerSideEncryptionByDefault": {
+                  "SSEAlgorithm": "aws:kms"
+                }
+              }
+            ]
+          }
+        },
+        "versioning": {
+          "Status": "Enabled"
+        },
+        "acl": {
+          "Grants": []
+        }
+      },
+      "timestamp": "2026-08-17T13:24:54.813815+00:00"
+    },
+    {
+      "drift_type": "ADDED",
+      "resource_id": "sg-01a2b3c4d5e6f7002",
+      "resource_type": "aws:ec2:security-group",
+      "resource_name": "db-postgres-cluster-sg",
+      "differences": {
+        "status": "Unmanaged / rogue resource created outside IaC baseline"
+      },
+      "baseline_value": null,
+      "current_value": {
+        "VpcId": "vpc-0987654321fedcba0",
+        "IpPermissions": [
+          {
+            "IpProtocol": "tcp",
+            "FromPort": 5432,
+            "ToPort": 5432,
+            "IpRanges": [
+              {
+                "CidrIp": "0.0.0.0/0"
+              }
+            ]
+          }
+        ]
+      },
+      "timestamp": "2026-08-17T13:24:54.813815+00:00"
+    },
+    {
+      "drift_type": "ADDED",
+      "resource_id": "sg-01a2b3c4d5e6f7003",
+      "resource_type": "aws:ec2:security-group",
+      "resource_name": "internal-microservice-hardened-sg",
+      "differences": {
+        "status": "Unmanaged / rogue resource created outside IaC baseline"
+      },
+      "baseline_value": null,
+      "current_value": {
+        "VpcId": "vpc-0987654321fedcba0",
+        "IpPermissions": [
+          {
+            "IpProtocol": "tcp",
+            "FromPort": 8080,
+            "ToPort": 8080,
+            "IpRanges": [
+              {
+                "CidrIp": "10.0.0.0/16"
+              }
+            ]
+          }
+        ]
+      },
+      "timestamp": "2026-08-17T13:24:54.813815+00:00"
+    },
+    {
+      "drift_type": "ADDED",
+      "resource_id": "arn:aws:rds:us-east-1:112233445566:db:corp-legacy-mysql-primary",
+      "resource_type": "aws:rds:db-instance",
+      "resource_name": "corp-legacy-mysql-primary",
+      "differences": {
+        "status": "Unmanaged / rogue resource created outside IaC baseline"
+      },
+      "baseline_value": null,
+      "current_value": {
+        "engine": "mysql",
+        "storage_encrypted": false,
+        "publicly_accessible": false
+      },
+      "timestamp": "2026-08-17T13:24:54.813815+00:00"
+    },
+    {
+      "drift_type": "ADDED",
+      "resource_id": "arn:aws:cloudtrail:us-east-1:112233445566:trail/management-trail",
+      "resource_type": "aws:cloudtrail:trail",
+      "resource_name": "management-trail",
+      "differences": {
+        "status": "Unmanaged / rogue resource created outside IaC baseline"
+      },
+      "baseline_value": null,
+      "current_value": {
+        "IsMultiRegionTrail": false,
+        "LogFileValidationEnabled": false,
+        "IsLogging": true
+      },
+      "timestamp": "2026-08-17T13:24:54.813815+00:00"
+    },
+    {
+      "drift_type": "ADDED",
+      "resource_id": "arn:aws:kms:us-east-1:112233445566:key/c0987654-1234-abcd-ef01-234567890abc",
+      "resource_type": "aws:kms:key",
+      "resource_name": "alias/app-master-encryption-key",
+      "differences": {
+        "status": "Unmanaged / rogue resource created outside IaC baseline"
+      },
+      "baseline_value": null,
+      "current_value": {
+        "KeyManager": "CUSTOMER",
+        "KeyRotationEnabled": false,
+        "Enabled": true
+      },
+      "timestamp": "2026-08-17T13:24:54.813815+00:00"
+    },
+    {
+      "drift_type": "ADDED",
+      "resource_id": "vpc-default-0123456789",
+      "resource_type": "aws:ec2:vpc",
+      "resource_name": "vpc-default",
+      "differences": {
+        "status": "Unmanaged / rogue resource created outside IaC baseline"
+      },
+      "baseline_value": null,
+      "current_value": {
+        "is_default": true,
+        "cidr_block": "172.31.0.0/16",
+        "flow_logs_enabled": false,
+        "active_instances_count": 4
+      },
+      "timestamp": "2026-08-17T13:24:54.813815+00:00"
+    }
+  ],
+  "summary": {
+    "total_resources": 14,
+    "total_findings": 18,
+    "critical_count": 5,
+    "high_count": 7,
+    "medium_count": 4,
+    "low_count": 2,
+    "info_count": 0,
+    "compliance_score": 0.0,
+    "passed_rules": 0,
+    "failed_rules": 18
+  }
+}
