@@ -18,7 +18,7 @@ if hasattr(sys.stdout, "reconfigure"):
     except Exception:
         pass
 
-from .core.models import ScanResult
+from .core.models import ScanResult, DriftType
 from .core.engine import SentinelEngine
 from .core.baseline import BaselineManager
 from .providers.aws import AWSCloudProvider
