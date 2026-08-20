@@ -209,9 +209,3 @@ cloud-drift-sentinel/
 ## 📜 License
 
 Distributed under the **MIT License**. See `LICENSE` for more information.
-
----
-
-<div align="center">
-  <sub>Built with ❤️ by <strong>Aditya Singh</strong> as part of the 30-Day Cloud, Cyber Security & Data Engineering Challenge.</sub>
-</div>
