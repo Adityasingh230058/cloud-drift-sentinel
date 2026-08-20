@@ -7,7 +7,7 @@ name = "cloud-drift-sentinel"
 version = "1.0.0"
 description = "Automated Multi-Cloud Security Posture Management & Infrastructure Drift Detection Engine"
 readme = "README.md"
-authors = [{ name = "Aditya Singh", email = "aditya.singh58@nmims.in" }]
+authors = [{ name = "Aditya Singh", email = "adityasingh120444@gmail.com" }]
 license = { text = "MIT" }
 requires-python = ">=3.9"
 dependencies = [
