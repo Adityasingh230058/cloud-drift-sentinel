@@ -3,7 +3,7 @@
 # 🛡️ Cloud Drift Sentinel
 ### Automated Multi-Cloud Security Posture Management (CSPM) & Infrastructure Drift Detection Engine
 
-[![CI Build](https://img.shields.io/badge/CI-GitHub%20Actions-blue.svg)](.github/workflows/ci.yml)
+[![CI](https://github.com/Adityasingh230058/cloud-drift-sentinel/actions/workflows/ci.yml/badge.svg)](https://github.com/Adityasingh230058/cloud-drift-sentinel/actions/workflows/ci.yml)
 [![Python Version](https://img.shields.io/badge/Python-3.9%20|%203.10%20|%203.11%20|%203.12-brightgreen.svg)](https://www.python.org/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Benchmark](https://img.shields.io/badge/Benchmark-CIS%20AWS%20v2.0-orange.svg)](https://www.cisecurity.org/benchmark/amazon_web_services)

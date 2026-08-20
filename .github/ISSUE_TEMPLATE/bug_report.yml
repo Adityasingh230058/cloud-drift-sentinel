@@ -1,0 +1,28 @@
+name: Bug Report
+description: Report a bug or issue in Cloud Drift Sentinel
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: Thanks for helping improve Cloud Drift Sentinel!
+  - type: textarea
+    id: description
+    attributes:
+      label: Bug Description
+      description: Detailed summary of the unexpected behavior or scan false positive.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to Reproduce
+      description: Exact CLI command or CIS rule ID triggered.
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Cloud Provider / Environment
+      placeholder: AWS (Boto3), Python 3.11, Local Mock Dataset
+    validations:
+      required: false
