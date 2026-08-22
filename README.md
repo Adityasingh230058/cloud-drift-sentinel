@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🛡️ Cloud Drift Sentinel
+# Cloud Drift Sentinel
 ### Automated AWS Security Posture Management (CSPM) & Infrastructure Drift Detection Engine
 
 [![CI](https://github.com/Adityasingh230058/cloud-drift-sentinel/actions/workflows/ci.yml/badge.svg)](https://github.com/Adityasingh230058/cloud-drift-sentinel/actions/workflows/ci.yml)
@@ -9,24 +9,24 @@
 [![Benchmark](https://img.shields.io/badge/Benchmark-CIS%20AWS%20v2.0-orange.svg)](https://www.cisecurity.org/benchmark/amazon_web_services)
 [![Code Style](https://img.shields.io/badge/Code%20Style-Black-000000.svg)](https://github.com/psf/black)
 
-**`cloud-drift-sentinel`** is a production-grade Cloud Security Posture Management (CSPM) and Infrastructure Drift Auditing engine designed for DevOps and Cloud Security teams. It continuously evaluates live cloud assets (IAM, S3, Security Groups, RDS, KMS, CloudTrail) against **CIS Foundations Benchmarks**, isolates unauthorized manual drift from IaC Golden State baselines, and generates actionable automated remediation playbooks alongside interactive executive dashboards.
+**`cloud-drift-sentinel`** is a Cloud Security Posture Management (CSPM) and Infrastructure Drift Auditing engine designed for DevOps and Cloud Security teams. It continuously evaluates live cloud assets (IAM, S3, Security Groups, RDS, KMS, CloudTrail) against **CIS Foundations Benchmarks**, isolates unauthorized manual drift from IaC Golden State baselines, and generates actionable automated remediation playbooks alongside interactive executive dashboards.
 
 </div>
 
 ---
 
-## 🌟 Key Highlights
+## Key Highlights
 
-- 🔍 **Multi-Service CIS Audit**: Scans IAM accounts, access keys, wildcard policies, public S3 buckets, open security groups (0.0.0.0/0), unencrypted databases, and logging pipelines.
-- ⚡ **Deep Infrastructure Drift Engine**: Compares observed cloud state against Golden Baseline IaC definitions (`ADDED`, `REMOVED`, `MODIFIED` configurations).
-- 🛠️ **Automated Remediation Generator**: Automatically creates executable **Python (Boto3)** and **Bash (AWS CLI)** remediation playbooks to instantly close security gaps.
-- 📊 **Executive HTML Report & Live CLI Dashboard**: Generates responsive, glassmorphic HTML security reports with interactive Chart.js analytics, risk filters, and terminal gauges.
-- 🧪 **Zero-Cost Simulation / Mock Engine**: Includes built-in simulated enterprise telemetry so developers can test rules and drift workflows without requiring cloud credentials or billing.
-- 🚀 **CI/CD Ready**: Native GitHub Actions pipeline testing multi-Python versions (3.10, 3.11, 3.12).
+- **Multi-Service CIS Audit**: Scans IAM accounts, access keys, wildcard policies, public S3 buckets, open security groups (0.0.0.0/0), unencrypted databases, and logging pipelines.
+- **Deep Infrastructure Drift Engine**: Compares observed cloud state against Golden Baseline IaC definitions (`ADDED`, `REMOVED`, `MODIFIED` configurations).
+- **Automated Remediation Generator**: Automatically creates executable **Python (Boto3)** and **Bash (AWS CLI)** remediation playbooks to close security gaps.
+- **Executive HTML Report & Live CLI Dashboard**: Generates responsive HTML security reports with interactive Chart.js analytics, risk filters, and terminal output.
+- **Simulation / Mock Engine**: Includes built-in simulated enterprise telemetry so developers can test rules and drift workflows without requiring cloud credentials.
+- **CI/CD Ready**: Native GitHub Actions pipeline testing multi-Python versions (3.10, 3.11, 3.12).
 
 ---
 
-## 🏛️ Architecture Overview
+## Architecture Overview
 
 ```
                       ┌─────────────────────────────────┐
@@ -62,14 +62,14 @@
                      ┌─────────────────────────────────────────────────┐
                      │              Output Artifacts                   │
                      ├─────────────────────────┬───────────────────────┤
-                     │ 📊 Interactive HTML UI  │ 🖥️ Rich Console Table │
-                     │ 📜 Auto-Remediation     │ 📦 JSON Telemetry     │
+                     │ Interactive HTML UI     │ Rich Console Table    │
+                     │ Auto-Remediation        │ JSON Telemetry        │
                      └─────────────────────────┴───────────────────────┘
 ```
 
 ---
 
-## 📋 Evaluated CIS Benchmark Rules
+## Evaluated CIS Benchmark Rules
 
 | Rule ID | Domain | Severity | Description |
 | :--- | :--- | :---: | :--- |
@@ -94,7 +94,7 @@
 
 ---
 
-## ⚡ Quickstart
+## Quickstart
 
 ### 1. Installation
 
@@ -109,7 +109,7 @@ pip install -e .
 
 ---
 
-## 💻 CLI Usage & Examples
+## CLI Usage & Examples
 
 ### 1. Run Offline Simulation Scan (Zero-Cost Mode)
 Run a complete posture audit with interactive HTML report, JSON export, and automated remediation scripts:
@@ -150,7 +150,7 @@ cloud-drift-sentinel rules
 
 ---
 
-## 🧪 Testing
+## Testing
 
 Execute the comprehensive test suite:
 
@@ -161,7 +161,7 @@ pytest --cov=cloud_drift_sentinel --cov-report=term-missing tests/
 
 ---
 
-## 📂 Repository Structure
+## Repository Structure
 
 ```
 cloud-drift-sentinel/
@@ -206,6 +206,6 @@ cloud-drift-sentinel/
 
 ---
 
-## 📜 License
+## License
 
 Distributed under the **MIT License**. See `LICENSE` for more information.
