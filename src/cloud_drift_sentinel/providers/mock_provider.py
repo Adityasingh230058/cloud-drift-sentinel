@@ -29,7 +29,7 @@ class MockCloudProvider(BaseCloudProvider):
                 tags={"Environment": "Production", "Owner": "SecOps"},
                 raw_config={
                     "root_account_has_active_key": True,
-                    "root_access_keys": ["AKIAIOSFODNN7EXAMPLE"],
+                    "root_access_keys": ["AKIAIOSFODNN7EXAMPLE"],  # AWS documentation example key — not a real credential
                     "account_mfa_present": True,
                 },
             ),
@@ -46,7 +46,7 @@ class MockCloudProvider(BaseCloudProvider):
                     "mfa_active": False,
                     "access_keys": [
                         {
-                            "access_key_id": "AKIAI44QH8DHBEXAMPLE",
+                            "access_key_id": "AKIAI44QH8DHBEXAMPLE",  # AWS documentation example key — not a real credential
                             "status": "Active",
                             "days_since_last_used": 124,
                         }

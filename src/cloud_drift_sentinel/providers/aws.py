@@ -6,6 +6,9 @@ import datetime
 from typing import List, Dict, Any, Optional
 import boto3
 from botocore.exceptions import ClientError, BotoCoreError
+import logging
+
+logger = logging.getLogger(__name__)
 
 from .base import BaseCloudProvider
 from ..core.models import CloudResource, ResourceType
@@ -51,7 +54,8 @@ class AWSCloudProvider(BaseCloudProvider):
                     },
                 )
             ]
-        except (ClientError, BotoCoreError):
+        except (ClientError, BotoCoreError) as exc:
+            logger.warning("Failed to collect %s resources: %s", "IAM account summary", exc)
             return []
 
     def _collect_iam_users(self) -> List[CloudResource]:
@@ -98,8 +102,8 @@ class AWSCloudProvider(BaseCloudProvider):
                             },
                         )
                     )
-        except (ClientError, BotoCoreError):
-            pass
+        except (ClientError, BotoCoreError) as exc:
+            logger.warning("Failed to collect %s resources: %s", "IAM user", exc)
         return resources
 
     def _collect_iam_roles(self) -> List[CloudResource]:
@@ -123,8 +127,8 @@ class AWSCloudProvider(BaseCloudProvider):
                             },
                         )
                     )
-        except (ClientError, BotoCoreError):
-            pass
+        except (ClientError, BotoCoreError) as exc:
+            logger.warning("Failed to collect %s resources: %s", "IAM role", exc)
         return resources
 
     def _collect_s3_buckets(self) -> List[CloudResource]:
@@ -182,8 +186,8 @@ class AWSCloudProvider(BaseCloudProvider):
                         },
                     )
                 )
-        except (ClientError, BotoCoreError):
-            pass
+        except (ClientError, BotoCoreError) as exc:
+            logger.warning("Failed to collect %s resources: %s", "S3 bucket", exc)
         return resources
 
     def _collect_security_groups(self) -> List[CloudResource]:
@@ -207,8 +211,8 @@ class AWSCloudProvider(BaseCloudProvider):
                         },
                     )
                 )
-        except (ClientError, BotoCoreError):
-            pass
+        except (ClientError, BotoCoreError) as exc:
+            logger.warning("Failed to collect %s resources: %s", "security group", exc)
         return resources
 
     def _collect_vpcs(self) -> List[CloudResource]:
@@ -237,8 +241,8 @@ class AWSCloudProvider(BaseCloudProvider):
                         },
                     )
                 )
-        except (ClientError, BotoCoreError):
-            pass
+        except (ClientError, BotoCoreError) as exc:
+            logger.warning("Failed to collect %s resources: %s", "VPC", exc)
         return resources
 
     def _collect_rds_instances(self) -> List[CloudResource]:
@@ -260,8 +264,8 @@ class AWSCloudProvider(BaseCloudProvider):
                         },
                     )
                 )
-        except (ClientError, BotoCoreError):
-            pass
+        except (ClientError, BotoCoreError) as exc:
+            logger.warning("Failed to collect %s resources: %s", "RDS instance", exc)
         return resources
 
     def _collect_cloudtrail(self) -> List[CloudResource]:
@@ -286,8 +290,8 @@ class AWSCloudProvider(BaseCloudProvider):
                         },
                     )
                 )
-        except (ClientError, BotoCoreError):
-            pass
+        except (ClientError, BotoCoreError) as exc:
+            logger.warning("Failed to collect %s resources: %s", "CloudTrail", exc)
         return resources
 
     def _collect_kms_keys(self) -> List[CloudResource]:
@@ -320,6 +324,6 @@ class AWSCloudProvider(BaseCloudProvider):
                         },
                     )
                 )
-        except (ClientError, BotoCoreError):
-            pass
+        except (ClientError, BotoCoreError) as exc:
+            logger.warning("Failed to collect %s resources: %s", "KMS key", exc)
         return resources
